@@ -1,0 +1,23 @@
+{
+  "name": "fodinha.io-api",
+  "version": "1.0.0",
+  "description": "## Nome passível de mudança",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LimaEduardo/fodinha.io-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LimaEduardo/fodinha.io-api/issues"
+  },
+  "homepage": "https://github.com/LimaEduardo/fodinha.io-api#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.1.1"
+  }
+}
