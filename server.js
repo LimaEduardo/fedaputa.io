@@ -19,7 +19,7 @@ var users = new Users()
 
 io.on('connection', (socket) => {
 
-  var user = new User(socket.id, "Player 1")
+  var user = new User(socket.id, "Unnamed player")
   users.addUser(user)
   
   io.emit('listRooms', rooms)
@@ -31,15 +31,37 @@ io.on('connection', (socket) => {
       callback(false)
       return
     })
+
     io.emit('listRooms', rooms)
-    joinRoom(params.name, socket.id)
-    callback(true)
+    var room = joinRoom(params.name, socket.id, params.playerName)
+    if (room) {
+      socket.join(room.name)
+      io.to(room.name).emit('updatePlayerList', room.getPlayers())
+      callback(true, room)
+    }
   })
 
-  socket.on('joinRoom', ({name}, callback) => {
-    console.log(name)
-    joinRoom(name, socket.id)
-    callback()
+  socket.on('joinRoom', ({name, playerName}, callback) => {
+    var room = joinRoom(name, socket.id, playerName)
+    if (room){
+      socket.join(room.name)
+      io.to(room.name).emit('updatePlayerList', room.getPlayers())
+      callback(room)
+    }
+  })
+
+  socket.on('playerReady', (ready) => {
+    var player = users.findUser(socket.id)
+    player.ready = ready
+    var room = rooms.findRoom(player.room)
+    room.playerIsReady(socket.id, ready)
+    io.to(room.name).emit('updatePlayerList', room.getPlayers())
+  })
+
+  socket.on('startMatch', () => {
+    var player = users.findUser(socket.id)
+    var room = rooms.findRoom(player.room)
+    room.beginMatch()
   })
 
   socket.on('disconnect', () => {
@@ -52,6 +74,7 @@ io.on('connection', (socket) => {
           room.removePlayer(socket.id, () => {
             rooms.removeRoom(room.name)
           })
+          io.to(user.room).emit('updatePlayerList', room.getPlayers())
         }
       }
       console.log("user disconnected")
@@ -61,16 +84,19 @@ io.on('connection', (socket) => {
   console.log("user connected!", socket.id)
 })
 
+
 server.listen(PORT , () => {
   console.log("Server running on PORT " + PORT)
 })
 
-function joinRoom(name, userId){
+function joinRoom(name, userId, playerName){
   var room = rooms.findRoom(name)
   var player = users.findUser(userId)
+  player.name = playerName
   if (player && room){
     room.addPlayer(player)
     player.enterRoom(name)
   }
+  return room
 
 }
