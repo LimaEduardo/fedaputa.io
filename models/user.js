@@ -4,6 +4,8 @@ class User{
     this.name = name
     this.room = ''
     this.ready = false
+    this.cards = []
+    this.cardsLoaded = false
   }
 
   enterRoom(room){
