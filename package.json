@@ -18,6 +18,7 @@
   "homepage": "https://github.com/LimaEduardo/fodinha.io-api#readme",
   "dependencies": {
     "express": "^4.16.4",
+    "lodash": "^4.17.11",
     "socket.io": "^2.1.1"
   }
 }

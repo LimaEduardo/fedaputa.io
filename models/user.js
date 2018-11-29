@@ -6,6 +6,7 @@ class User{
     this.ready = false
     this.cards = []
     this.cardsLoaded = false
+    this.points = 0
   }
 
   enterRoom(room){

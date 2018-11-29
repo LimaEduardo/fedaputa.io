@@ -69,6 +69,21 @@ io.on('connection', (socket) => {
     })
   })
 
+  socket.on('playerMove', (card) => {
+    var player = users.findUser(socket.id)
+    var room = rooms.findRoom(player.room)
+    room.recievePlay(card, socket.id).then(() => {
+      room.announceWinner().then((winner) => {
+        console.log("WINNER")
+        io.to(player.room).emit('announceWinner', {winner})
+        io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
+      }).catch(() => {
+        console.log("no winner")
+        io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
+      })
+    })
+  })
+
   // socket.on('cardsLoaded', () => {
   //   var player = users.findUser(socket.id)
   //   var room = rooms.findRoom(player.room)
