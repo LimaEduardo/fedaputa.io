@@ -61,10 +61,12 @@ io.on('connection', (socket) => {
   socket.on('startMatch', () => {
     var player = users.findUser(socket.id)
     var room = rooms.findRoom(player.room)
+    room.changeNumCards()
     room.beginMatch().then(() => {
       //TODO: Not updating
       io.emit('listRooms', rooms)
       io.to(room.name).emit('givePlayersCards', room.getPlayers())
+      io.to(room.name).emit('sendPlayersPoints', room.getPlayers())
       io.to(room.name).emit('startMatchWithCards', room.currentTurn())
     })
   })
