@@ -12,6 +12,7 @@ class Room {
     this.currentRound = 0
     this.rounds = [[]]
     this.winner = null // index
+    this.numCards = 1
   }
 
   addPlayer(id){
@@ -47,7 +48,7 @@ class Room {
     return new Promise((resolve, reject) => {
       this.players.forEach((player, index) => {
         var cards = []
-        for (var i = 0; i < 4; i++){
+        for (var i = 0; i < this.numCards; i++){
           var randomIndex = (Math.floor(Math.random() * this.deck.length))
           cards.push(this.deck[randomIndex])
           this.deck.splice(randomIndex, 1)
@@ -105,6 +106,13 @@ class Room {
         })
       })
     })
+  }
+
+  changeNumCards() {
+    this.numCards += 1
+    if((this.numCards*this.players.length) > this.deck.length) {
+      this.numCards = 1
+    }
   }
 
   changeRound(){
