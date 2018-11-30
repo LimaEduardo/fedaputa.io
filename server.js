@@ -32,13 +32,14 @@ io.on('connection', (socket) => {
       return
     })
 
-    io.emit('listRooms', rooms)
     var room = joinRoom(params.name, socket.id, params.playerName)
     if (room) {
       socket.join(room.name)
       io.to(room.name).emit('updatePlayerList', room.getPlayers())
       callback(true, room)
     }
+    
+    io.emit('listRooms', rooms)
   })
 
   socket.on('joinRoom', ({name, playerName}, callback) => {
@@ -46,6 +47,7 @@ io.on('connection', (socket) => {
     if (room){
       socket.join(room.name)
       io.to(room.name).emit('updatePlayerList', room.getPlayers())
+      io.emit('listRooms', rooms)
       callback(room)
     }
   })
