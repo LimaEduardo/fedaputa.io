@@ -7,6 +7,12 @@ class User{
     this.cards = []
     this.cardsLoaded = false
     this.points = 4
+    this.roundsToWin = -1
+    this.roundsWinning = 0
+  }
+
+  setRoundsToWin(num) {
+    this.roundsToWin = num
   }
 
   enterRoom(room){

@@ -73,6 +73,12 @@ io.on('connection', (socket) => {
     })
   })
 
+socket.on('setRoundsToWin', (num) => {
+  var player = users.findUser(socket.id)
+  player.setRoundsToWin(num)
+  console.log(`aqui veio ${num}`)
+})
+
   socket.on('playerMove', (card) => {
     var player = users.findUser(socket.id)
     var room = rooms.findRoom(player.room)
