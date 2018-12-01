@@ -70,19 +70,20 @@ io.on('connection', (socket) => {
       io.to(room.name).emit('givePlayersCards', room.getPlayers())
       io.to(room.name).emit('sendPlayersPoints', room.getPlayers())
       io.to(room.name).emit('startMatchWithCards', room.currentTurn())
+    }, () => {
+      io.to(room.name).emit('playersNotReady')
     })
   })
 
   socket.on('playerMove', (card) => {
     var player = users.findUser(socket.id)
+    io.to(player.room).emit('cardPlayed', {card, playerName: player.name})
     var room = rooms.findRoom(player.room)
     room.recievePlay(card, socket.id).then(() => {
       room.announceWinner().then((winner) => {
-        console.log("WINNER")
         io.to(player.room).emit('announceWinner', {winner})
         io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
       }).catch(() => {
-        console.log("no winner")
         io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
       })
     })
