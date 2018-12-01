@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
     var player = users.findUser(socket.id)
     var room = rooms.findRoom(player.room)
     player.pointsToDo = num['roundsToWin']
-    io.to(room.name).emit('updatePlayerList', room.getPlayers())
+    io.to(room.name).emit('updatePlayerPoints', room.getPlayers())
   })
 
   socket.on('playerMove', (card) => {
