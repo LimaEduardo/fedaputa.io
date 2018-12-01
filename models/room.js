@@ -13,6 +13,7 @@ class Room {
     this.rounds = [[]]
     this.winner = null // index
     this.numCards = 1
+    this.hand = 1
   }
 
   addPlayer(id){
@@ -62,6 +63,7 @@ class Room {
   beginMatch(){
     return new Promise((resolve, reject) => {
       if (this.playersReadyToStart()){
+        this.hand = 1
         this.inGame = true
         this.distributeCards().then(() => {
           resolve()
