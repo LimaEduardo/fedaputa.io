@@ -75,6 +75,13 @@ io.on('connection', (socket) => {
     })
   })
 
+  socket.on('setRoundsToWin', (num) => {
+    var player = users.findUser(socket.id)
+    var room = rooms.findRoom(player.room)
+    player.pointsToDo = num['roundsToWin']
+    io.to(room.name).emit('updatePlayerList', room.getPlayers())
+  })
+
   socket.on('playerMove', (card) => {
     var player = users.findUser(socket.id)
     io.to(player.room).emit('cardPlayed', {card, playerName: player.name})

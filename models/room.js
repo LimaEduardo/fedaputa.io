@@ -140,6 +140,7 @@ class Room {
     return new Promise((resolve,reject) => {
       this.getPlayer(id).then((index) => {
         this.players[index].points += 1
+        this.players[index].winHand()
         resolve()
       })
     })
