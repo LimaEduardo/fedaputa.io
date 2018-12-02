@@ -83,6 +83,12 @@ class Room {
     });
   }
 
+  updateTotalPoints(){
+    this.players.forEach((player, id) => {
+      player.checkPoints()
+    })
+  }
+
   removeCard(card, id){
     var objNormalized = {pack: card.pack, value: card.value, weight: parseInt(card.weight)}
     return new Promise ((resolve, reject) => {

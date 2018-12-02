@@ -14,6 +14,14 @@ class User{
     this.pointsToDo -= 1
   }
 
+  checkPoints() {
+    if (this.pointsToDo < 0) {
+      this.totalPoints += this.pointsToDo
+    } else {
+      this.totalPoints -= this.pointsToDo
+    }
+  }
+
   enterRoom(room){
     this.room = room
   }

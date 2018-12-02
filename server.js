@@ -141,14 +141,15 @@ server.listen(PORT , () => {
 })
 
 function newRound(room) {
-  console.log("VEIO qui")
   room.changeNumCards()
+  room.updateTotalPoints()
   room.beginMatch().then(() => {
     //TODO: Not updating
     io.emit('listRooms', rooms)
     io.to(room.name).emit('givePlayersCards', room.getPlayers())
     io.to(room.name).emit('sendPlayersPoints', room.getPlayers())
     io.to(room.name).emit('startMatchWithCards', room.currentTurn())
+    io.to(room.name).emit('updatePlayerPoints', room.getPlayers())
   }, () => {
     io.to(room.name).emit('playersNotReady')
   })
