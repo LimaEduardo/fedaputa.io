@@ -6,7 +6,24 @@ class User{
     this.ready = false
     this.cards = []
     this.cardsLoaded = false
-    this.points = 4
+    this.totalPoints = 4
+    this.pointsToDo = -1
+    this.lost = false
+  }
+
+  winHand(){
+    this.pointsToDo -= 1
+  }
+
+  checkPoints() {
+    if (this.pointsToDo < 0) {
+      this.totalPoints += this.pointsToDo
+    } else {
+      this.totalPoints -= this.pointsToDo
+    }
+    if (this.totalPoints < 1) {
+      this.lost = true
+    }
   }
 
   enterRoom(room){
