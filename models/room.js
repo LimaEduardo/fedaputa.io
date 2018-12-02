@@ -159,7 +159,6 @@ class Room {
   changeTurn(){
     return new Promise((resolve, reject) => {
       if (this.turn === this.players.length - 1){  
-        console.log("Entrou no if")
         this.verifyWinnerOfRound().then(() => {
           console.log("ROUND CHANGED")
           this.changeRound()
@@ -167,6 +166,10 @@ class Room {
         })
       } else {
         this.turn += 1
+        while (this.players[this.turn].cards.length === 0){
+          console.log("Jogador sem cartas, aumenta o round")
+          this.turn += 1
+        }
       }
       resolve(this.turn)
     })
@@ -218,6 +221,10 @@ class Room {
 
   getPlayers(){
     return this.players
+  }
+
+  currentPlayerHasCards(){
+    return this.players[this.turn].cards.length !== 0
   }
 
   cardsLoadedToPlayer(id) {
