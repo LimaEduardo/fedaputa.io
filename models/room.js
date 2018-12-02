@@ -86,14 +86,14 @@ class Room {
   }
 
   getWinner(){
-    nome = null
-    this.players.forEach((player, id) => {
-      if(player.totalPoints > 0) {
-        nome = player
-        return
-      }
+    return new Promise((resolve, reject) => {
+      this.players.forEach((player) => {
+        if(player.lost === false) {
+          resolve(player)
+        }
+      })
+      reject(null)
     })
-    return nome
   }
 
   endMatch(){

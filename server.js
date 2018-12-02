@@ -141,7 +141,11 @@ function newRound(room) {
   room.updateTotalPoints()
   if(room.endMatch()) {
     io.to(room.name).emit('updatePlayerPoints', room.getPlayers())
-    io.to(room.name).emit('endMatch', room.getPlayers())
+    room.getWinner().then((winner) => {
+      io.to(room.name).emit('endMatch', winner)
+    }, (player) => {
+      io.to(room.name).emit('endMatch', null)
+    })
   } else {
     room.changeNumCards()
     room.beginMatch().then(() => {
