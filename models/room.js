@@ -103,7 +103,6 @@ class Room {
         count += 1
       }
     })
-    console.log(count)
     if (count <= 1) {
       return true
     }
@@ -124,7 +123,6 @@ class Room {
         this.players[index].cards.forEach((playerCard, indexCard) => {
           if (_.isEqual(objNormalized, playerCard)){
             this.players[index].cards.splice(indexCard, 1)
-            console.log("card removed!")
             resolve()
           }
         })
@@ -160,14 +158,12 @@ class Room {
     return new Promise((resolve, reject) => {
       if (this.turn === this.players.length - 1){  
         this.verifyWinnerOfRound().then(() => {
-          console.log("ROUND CHANGED")
           this.changeRound()
           this.turn = 0
         })
       } else {
         this.turn += 1
         while (this.players[this.turn].cards.length === 0){
-          console.log("Jogador sem cartas, aumenta o round")
           this.turn += 1
         }
       }
@@ -191,10 +187,14 @@ class Room {
       round.sort((a, b) => {
         return a.weight - b.weight
       })
-      this.giveAPointTo(round[round.length - 1].player).then(() => {
-        this.winner = round[round.length - 1].player
-        console.log("POINT GIVEN TO " + round[round.length - 1].player)
-      })
+      //Draw case
+      if (round[round.length - 1].weight === round[round.length - 2].weight){
+        this.winner = "draw"
+      } else {
+        this.giveAPointTo(round[round.length - 1].player).then(() => {
+          this.winner = round[round.length - 1].player
+        })
+      }
       resolve()
     })
   }
@@ -202,14 +202,15 @@ class Room {
   announceWinner(){
     return new Promise((resolve, reject) => {
       if (this.winner !== null){
-        console.log("Tem vencedor")
-        this.getPlayer(this.winner).then((playerIndex) => {
-          console.log("vai devolver o vencedor" + this.players[playerIndex])
-          this.winner = null
-          resolve(this.players[playerIndex])
-        })
+        if (this.winner === "draw") {
+          resolve("draw")
+        } else {
+          this.getPlayer(this.winner).then((playerIndex) => {
+            this.winner = null
+            resolve(this.players[playerIndex])
+          })
+        }
       } else {
-        console.log("reject")
         reject()
       }
     })
@@ -234,12 +235,10 @@ class Room {
         this.players[index].cardsLoaded = true
       })
       this.players.forEach((player) => {
-        console.log(this.players)
         if (player.cardsLoaded === false){
           reject("Erro")
         }
       })
-      console.log("foi")
       resolve()
     })
 

@@ -89,8 +89,7 @@ io.on('connection', (socket) => {
       room.announceWinner().then((winner) => {
         io.to(player.room).emit('announceWinner', {winner})
         io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
-        io.to(player.room).emit('updatePlayerPoints', room.getPlayers())
-        
+        io.to(player.room).emit('updatePlayerPoints', room.getPlayers())     
         if(room.numCards == room.hand) {
           newRound(room)
         } else {
