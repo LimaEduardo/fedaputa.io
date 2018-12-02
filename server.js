@@ -90,11 +90,8 @@ io.on('connection', (socket) => {
         io.to(player.room).emit('announceWinner', {winner})
         io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
         io.to(player.room).emit('updatePlayerPoints', room.getPlayers())
-        console.log(room.numCards)
-        console.log(room.hand)
         
         if(room.numCards == room.hand) {
-          console.log(room)
           newRound(room)
         } else {
           room.hand += 1
@@ -141,18 +138,23 @@ server.listen(PORT , () => {
 })
 
 function newRound(room) {
-  room.changeNumCards()
   room.updateTotalPoints()
-  room.beginMatch().then(() => {
-    //TODO: Not updating
-    io.emit('listRooms', rooms)
-    io.to(room.name).emit('givePlayersCards', room.getPlayers())
-    io.to(room.name).emit('sendPlayersPoints', room.getPlayers())
-    io.to(room.name).emit('startMatchWithCards', room.currentTurn())
+  if(room.endMatch()) {
     io.to(room.name).emit('updatePlayerPoints', room.getPlayers())
-  }, () => {
-    io.to(room.name).emit('playersNotReady')
-  })
+    io.to(room.name).emit('endMatch', room.getPlayers())
+  } else {
+    room.changeNumCards()
+    room.beginMatch().then(() => {
+      //TODO: Not updating
+      io.emit('listRooms', rooms)
+      io.to(room.name).emit('givePlayersCards', room.getPlayers())
+      io.to(room.name).emit('sendPlayersPoints', room.getPlayers())
+      io.to(room.name).emit('startMatchWithCards', room.currentTurn())
+      io.to(room.name).emit('updatePlayerPoints', room.getPlayers())
+    }, () => {
+      io.to(room.name).emit('playersNotReady')
+    })
+  }
 }
 
 function joinRoom(name, userId, playerName){

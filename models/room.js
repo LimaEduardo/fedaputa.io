@@ -48,13 +48,15 @@ class Room {
   distributeCards(){
     return new Promise((resolve, reject) => {
       this.players.forEach((player, index) => {
-        var cards = []
-        for (var i = 0; i < this.numCards; i++){
-          var randomIndex = (Math.floor(Math.random() * this.deck.length))
-          cards.push(this.deck[randomIndex])
-          this.deck.splice(randomIndex, 1)
+        if(!player.lost) {
+          var cards = []
+          for (var i = 0; i < this.numCards; i++){
+            var randomIndex = (Math.floor(Math.random() * this.deck.length))
+            cards.push(this.deck[randomIndex])
+            this.deck.splice(randomIndex, 1)
+          }
+          this.players[index].cards = cards
         }
-        this.players[index].cards = cards
       })
       resolve()
     })
@@ -82,6 +84,32 @@ class Room {
       }
     });
   }
+
+  getWinner(){
+    nome = null
+    this.players.forEach((player, id) => {
+      if(player.totalPoints > 0) {
+        nome = player
+        return
+      }
+    })
+    return nome
+  }
+
+  endMatch(){
+    var count = 0
+    this.players.forEach((player, id) => {
+      if(!player.lost) {
+        count += 1
+      }
+    })
+    console.log(count)
+    if (count <= 1) {
+      return true
+    }
+    return false
+  }
+
 
   updateTotalPoints(){
     this.players.forEach((player, id) => {
