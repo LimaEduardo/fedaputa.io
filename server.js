@@ -52,6 +52,18 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('watchRoom', ({name, playerName}, callback) => {
+    // var room = joinRoom(name, socket.id, playerName)
+    socket.join(name)
+    callback()
+    // if (room){
+    //   // socket.join(room.name)
+    //   // io.to(room.name).emit('updatePlayerList', room.getPlayers())
+    //   // io.emit('listRooms', rooms)
+      
+    // }
+  })
+
   socket.on('playerReady', (ready) => {
     var player = users.findUser(socket.id)
     player.ready = ready
