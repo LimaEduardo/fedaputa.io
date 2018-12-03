@@ -85,6 +85,26 @@ class Room {
     });
   }
 
+  playersHasPointsTODO() {
+    var result = true
+    this.players.forEach((player, index) => {
+      var hasPointsTODO = player.hasPointsTODO() 
+      if(hasPointsTODO === false) {
+        result = false
+      }
+    })
+    return result
+  }
+
+  setPointsNull() {
+    return new Promise((resolve,reject) => {
+      this.players.forEach((player, index) => {
+        this.players[index].pointsToDo = null
+      })
+      resolve()
+    })
+  }
+
   getWinner(){
     return new Promise((resolve, reject) => {
       this.players.forEach((player) => {

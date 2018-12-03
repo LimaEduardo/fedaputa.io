@@ -83,22 +83,26 @@ io.on('connection', (socket) => {
 
   socket.on('playerMove', (card) => {
     var player = users.findUser(socket.id)
-    io.to(player.room).emit('cardPlayed', {card, playerName: player.name})
     var room = rooms.findRoom(player.room)
-    room.recievePlay(card, socket.id).then(() => {
-      room.announceWinner().then((winner) => {
-        io.to(player.room).emit('announceWinner', {winner})
-        io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
-        io.to(player.room).emit('updatePlayerPoints', room.getPlayers())     
-        if(room.numCards == room.hand) {
-          newRound(room)
-        } else {
-          room.hand += 1
-        }
-      }).catch(() => {
-        io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
+    if(!room.playersHasPointsTODO()) {
+      io.to(player.room).emit('playersNotSetPointsTODO', {id: socket.id})
+    } else {
+      io.to(player.room).emit('cardPlayed', {card, playerName: player.name})
+      room.recievePlay(card, socket.id).then(() => {
+        room.announceWinner().then((winner) => {
+          io.to(player.room).emit('announceWinner', {winner})
+          io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
+          io.to(player.room).emit('updatePlayerPoints', room.getPlayers())     
+          if(room.numCards == room.hand) {
+            newRound(room)
+          } else {
+            room.hand += 1
+          }
+        }).catch(() => {
+          io.to(player.room).emit('changeTurn', {currentPlayer : room.currentTurn(), players: room.getPlayers()})
+        })
       })
-    })
+    }
   })
 
   // socket.on('cardsLoaded', () => {
@@ -138,26 +142,28 @@ server.listen(PORT , () => {
 
 function newRound(room) {
   room.updateTotalPoints()
-  if(room.endMatch()) {
-    io.to(room.name).emit('updatePlayerPoints', room.getPlayers())
-    room.getWinner().then((winner) => {
-      io.to(room.name).emit('endMatch', winner)
-    }, (player) => {
-      io.to(room.name).emit('endMatch', null)
-    })
-  } else {
-    room.changeNumCards()
-    room.beginMatch().then(() => {
-      //TODO: Not updating
-      io.emit('listRooms', rooms)
-      io.to(room.name).emit('givePlayersCards', room.getPlayers())
-      io.to(room.name).emit('sendPlayersPoints', room.getPlayers())
-      io.to(room.name).emit('startMatchWithCards', room.currentTurn())
+  room.setPointsNull().then(() => {
+    if(room.endMatch()) {
       io.to(room.name).emit('updatePlayerPoints', room.getPlayers())
-    }, () => {
-      io.to(room.name).emit('playersNotReady')
-    })
-  }
+      room.getWinner().then((winner) => {
+        io.to(room.name).emit('endMatch', winner)
+      }, (player) => {
+        io.to(room.name).emit('endMatch', null)
+      })
+    } else {
+      room.changeNumCards()
+      room.beginMatch().then(() => {
+        //TODO: Not updating
+        io.emit('listRooms', rooms)
+        io.to(room.name).emit('givePlayersCards', room.getPlayers())
+        io.to(room.name).emit('sendPlayersPoints', room.getPlayers())
+        io.to(room.name).emit('startMatchWithCards', room.currentTurn())
+        io.to(room.name).emit('updatePlayerPoints', room.getPlayers())
+      }, () => {
+        io.to(room.name).emit('playersNotReady')
+      })
+    }
+  })
 }
 
 function joinRoom(name, userId, playerName){

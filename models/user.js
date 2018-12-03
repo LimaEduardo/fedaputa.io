@@ -7,12 +7,16 @@ class User{
     this.cards = []
     this.cardsLoaded = false
     this.totalPoints = 4
-    this.pointsToDo = -1
+    this.pointsToDo = null
     this.lost = false
   }
 
   winHand(){
     this.pointsToDo -= 1
+  }
+
+  hasPointsTODO(){
+    return this.pointsToDo !== null
   }
 
   checkPoints() {
