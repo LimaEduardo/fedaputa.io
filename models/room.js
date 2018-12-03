@@ -223,6 +223,7 @@ class Room {
     return new Promise((resolve, reject) => {
       if (this.winner !== null){
         if (this.winner === "draw") {
+          this.winner = null
           resolve("draw")
         } else {
           this.getPlayer(this.winner).then((playerIndex) => {

@@ -52,6 +52,13 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('watchRoom', ({name}, callback) => {
+    var room = rooms.findRoom(name)
+    socket.join(room.name)
+    io.to(room.name).emit('updatePlayerList', room.getPlayers())
+    callback()
+  })
+
   socket.on('playerReady', (ready) => {
     var player = users.findUser(socket.id)
     player.ready = ready
@@ -104,16 +111,6 @@ io.on('connection', (socket) => {
       })
     }
   })
-
-  // socket.on('cardsLoaded', () => {
-  //   var player = users.findUser(socket.id)
-  //   var room = rooms.findRoom(player.room)
-  //   room.cardsLoadedToPlayer(socket.id).then(() => {
-  //     io.to(room.name).emit('startMatchWithCards', room.currentTurn())
-  //   }).catch((error) => {
-  //     console.log("Erro no cardsloaded ", error)
-  //   })
-  // })
 
   socket.on('disconnect', () => {
     console.log('disconnected')
